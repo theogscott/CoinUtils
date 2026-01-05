@@ -13,6 +13,10 @@ let package = Package(
     platforms: [
         .iOS(.v15),   // iOS 15+ (or later)
         .macOS(.v13)   // macOS 13+ (Ventura) – adjust if you need an older version
+                      // add more later:
+                    /// Linux: Visual Studio Code, CLion, JetBrains AppCode (via remote dev), vim/emacs + LSP, Swift Playground Docker images.
+                    /// Windows: VS Code (Swift extension), CLion, Visual Studio Code with LSP; JetBrains AppCode via remote‑dev or macOS VM
+
     ],
     
     // MARK: - Products (what the package vends to clients)
@@ -48,8 +52,8 @@ let package = Package(
         .target(
             name: "CoinUtils",  // internal name – can be anything
             dependencies: [],         // No external modules
-            path: "src",
-            sources: [
+            path: "src", // folder that holds the C++ files
+            sources: [  // The C++ files to be included in the build
                 "CoinAlloc.cpp",
                 "CoinBuild.cpp",
                 "CoinDenseFactorization.cpp",
@@ -116,9 +120,26 @@ let package = Package(
             
             // ---- C++‑specific settings --------------------------------------------------------
             cxxSettings: [
+                // Use the C++20 (or C++23) dialect – change if you need a different version.
+                //.cxxStandard("c++20"), // use user default, aka Xcode version
+                
                 .define("COINUTILS_BUILD", to: "1"),
+                
+                // Tell the compiler where to find your headers from path sources
                 .headerSearchPath(".")
             ]
         )
+        
+        // MARK: - Tests
+        // -----------------------------------------------------------------
+        //  TODO: To add once we have a sucessfull build
+        //  Keeping below as template
+        // -----------------------------------------------------------------
+        //        ,
+        //        .testTarget(
+        //            name: "",
+        //            dependencies: ["CoinUtils"] // Tests depends/run on the lib we testing
+        //        ),
+        
     ]
 )
