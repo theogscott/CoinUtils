@@ -8,7 +8,7 @@
  * @file CoinStaticConflictGraph.cpp
  * @brief static CoinConflictGraph implementation with fast queries
  * @author Samuel Souza Brito and Haroldo Gambini Santos
- * Contact: samuelbrito@ufop.edu.br and haroldo@ufop.edu.br
+ * Contact: samuelbrito@ufop.edu.br and haroldo.santos@gmail.com
  * @date 03/27/2020
  *
  * \copyright{Copyright 2020 Brito, S.S. and Santos, H.G.}
@@ -39,9 +39,13 @@ CoinStaticConflictGraph::CoinStaticConflictGraph (
   const CoinPackedMatrix *matrixByRow,
   const char *sense,
   const double *rowRHS,
-  const double *rowRange )
+  const double *rowRange,
+  const double primalTolerance,
+  const double infinity,
+  const std::vector<std::string> &colNames,
+  const std::vector<std::string> &rowNames)
 {
-    CoinDynamicConflictGraph *cgraph = new CoinDynamicConflictGraph(numCols, colType, colLB, colUB, matrixByRow, sense, rowRHS, rowRange);
+    CoinDynamicConflictGraph *cgraph = new CoinDynamicConflictGraph(numCols, colType, colLB, colUB, matrixByRow, sense, rowRHS, rowRange, primalTolerance, infinity, colNames, rowNames);
 
     iniCoinStaticConflictGraph(cgraph);
     newBounds_ = cgraph->updatedBounds();
@@ -123,7 +127,7 @@ CoinStaticConflictGraph::CoinStaticConflictGraph( const CoinConflictGraph *cgrap
   std::vector< size_t > newIdx( cgraph->size(), REMOVED );
   for ( size_t i=0 ; (i<n) ; ++i )
     newIdx[elements[i]] = i;
-  
+
   std::vector<char> iv(size_);
   std::vector< bool > ivNeighs;
 
@@ -283,7 +287,7 @@ CoinStaticConflictGraph::CoinStaticConflictGraph( const CoinConflictGraph *cgrap
 size_t CoinStaticConflictGraph::nTotalDirectConflicts() const {
   return this->nDirectConflicts_;
 }
-  
+
 size_t CoinStaticConflictGraph::nTotalCliqueElements() const {
   return this->totalCliqueElements_;
 }
@@ -307,6 +311,7 @@ void CoinStaticConflictGraph::iniCoinStaticConflictGraph(const CoinConflictGraph
     conflicts_ = std::vector<std::vector<size_t> >(size_);
     nodeCliques_ = std::vector<std::vector<size_t> >(size_);
     cliques_ = std::vector<std::vector<size_t> >(cgraph->nCliques());
+    infeasibleImplications_ = cgraph->infeasibleImplications();
 
     // copying direct conflicts
     for ( size_t i=0 ; (i<size()) ; ++i ) {
