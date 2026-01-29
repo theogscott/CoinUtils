@@ -53,7 +53,7 @@ let package = Package(
             name: "libCoinUtils",  // internal name – can be anything
             dependencies: [],         // No external modules
             path: "src", // folder that holds the C++ files
-            exclude: ["src/Coin_C_defines.h", // We list all files, ands thosse headers thty must part of the librry, are commenytd  out.
+            exclude: ["src/Coin_C_defines.h", // We list all files, ands thosse headers thty must part of the library, are commented  out.
                       //"src/CoinAdjacencyVector.hpp", //  will be part if the lib
                       "src/CoinAlloc.hpp",  // will be exlude CoinAlloc
                       //"src/CoinBronKerbosch.hpp",
