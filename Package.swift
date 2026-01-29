@@ -26,9 +26,9 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "CoinUtils",
+            name: "libCoinUtils",
             type: .static, // static because of sandboxing.
-            targets: ["CoinUtils"]
+            targets: ["libCoinUtils"]
         ),
     ],
     
@@ -50,14 +50,105 @@ let package = Package(
         // 4a C++ target (only .cpp/.hpp files)
         // ------------------------------------------------------------
         .target(
-            name: "CoinUtils",  // internal name – can be anything
+            name: "libCoinUtils",  // internal name – can be anything
             dependencies: [],         // No external modules
             path: "src", // folder that holds the C++ files
+            exclude: ["src/Coin_C_defines.h", // We list all files, ands thosse headers thty must part of the librry, are commenytd  out.
+                      //"src/CoinAdjacencyVector.hpp", //  will be part if the lib
+                      "src/CoinAlloc.hpp",  // will be exlude CoinAlloc
+                      //"src/CoinBronKerbosch.hpp",
+                      "src/CoinBuild.hpp",
+                      //"src/CoinCliqueExtender.hpp",
+                      //"src/CoinCliqueList.hpp",
+                      //"src/CoinCliqueSet.hpp",
+                      "src/CoinColumnType.hpp",
+                      //"src/CoinConflictGraph.hpp",
+                      //"src/CoinCutPool.hpp",
+                      "src/CoinDenseFactorization.hpp",
+                      "src/CoinDenseVector.hpp",
+                      "src/CoinDistance.hpp",
+                      //"src/CoinDynamicConflictGraph.hpp",
+                      "src/CoinError.hpp",
+                      "src/CoinFactorization.hpp",
+                      "src/CoinFileIO.hpp",
+                      "src/CoinFinite.hpp",
+                      "src/CoinFloatEqual.hpp",
+                      "src/CoinHelperFunctions.hpp",
+                      "src/CoinIndexedVector.hpp",
+                      "src/CoinKnapsackRow.hpp",
+                      "src/CoinLpIO.hpp",
+                      "src/CoinMessage.hpp",
+                      "src/CoinMessageHandler.hpp",
+                      "src/CoinModel.hpp",
+                      "src/CoinModelUseful.hpp",
+                      "src/CoinMpsIO.hpp",
+                      // "src/CoinNodeHeap.hpp",
+                      //"src/CoinOddWheelSeparator.hpp",
+                      "src/CoinOslC.h",
+                      "src/CoinOslFactorization.hpp",
+                      "src/CoinPackedMatrix.hpp",
+                      "src/CoinPackedVector.hpp",
+                      "src/CoinPackedVectorBase.hpp",
+                      "src/CoinParam.hpp",
+                      "src/CoinPragma.hpp",
+                      "src/CoinPresolveDoubleton.hpp",
+                      "src/CoinPresolveDual.hpp",
+                      "src/CoinPresolveDupcol.hpp",
+                      "src/CoinPresolveEmpty.hpp",
+                      "src/CoinPresolveFixed.hpp",
+                      "src/CoinPresolveForcing.hpp",
+                      "src/CoinPresolveImpliedFree.hpp",
+                      "src/CoinPresolveIsolated.hpp",
+                      "src/CoinPresolveMatrix.hpp",
+                      "src/CoinPresolveMonitor.hpp",
+                      "src/CoinPresolvePsdebug.hpp",
+                      "src/CoinPresolveSingleton.hpp",
+                      "src/CoinPresolveSubst.hpp",
+                      "src/CoinPresolveTighten.hpp",
+                      "src/CoinPresolveTripleton.hpp",
+                      "src/CoinPresolveUseless.hpp",
+                      "src/CoinPresolveZeros.hpp",
+                      "src/CoinRational.hpp",
+                      "src/CoinSearchTree.hpp",
+                      "src/CoinShallowPackedVector.hpp",
+                      //"src/CoinShortestPath.hpp",
+                      "src/CoinSignal.hpp",
+                      "src/CoinSimpFactorization.hpp",
+                      "src/CoinSmartPtr.hpp",
+                      "src/CoinSnapshot.hpp",
+                      "src/CoinSort.hpp",
+                      //"src/CoinStaticConflictGraph.hpp",
+                      "src/CoinStructuredModel.hpp",
+                      "src/CoinTerm.hpp",
+                      "src/CoinTime.hpp",
+                      "src/CoinTypes.h",
+                      "src/CoinUtility.hpp",
+                     //"src/CoinUtilsConfig.h",
+                      "src/CoinWarmStart.hpp",
+                      "src/CoinWarmStartBasis.hpp",
+                      "src/CoinWarmStartDual.hpp",
+                      "src/CoinWarmStartPrimalDual.hpp",
+                      "src/CoinWarmStartVector.hpp",
+                      "src/config_coinutils_default.h",
+                      "src/config_coinutils.h.in",
+                      "src/config_default.h",
+                      "src/config.h.in",
+                      "src/configall_system_aaplxcode",
+                      "src/configall_system_msc.h",
+                      "src/configall_system.h"],
             sources: [  // The C++ files to be included in the build
+                "CoinAdjacencyVector.cpp",
                 "CoinAlloc.cpp",
+                "CoinBronKerbosch.cpp",
                 "CoinBuild.cpp",
+                "CoinCliqueExtender.cpp",
+                "CoinCliqueList.cpp",
+                "CoinCliqueSet.cpp",
+                "CoinConflictGraph.cpp",
+                "CoinCutPool.cpp",
                 "CoinDenseFactorization.cpp",
                 "CoinDenseVector.cpp",
+                "CoinDynamicConflictGraph.cpp",
                 "CoinError.cpp",
                 "CoinFactorization1.cpp",
                 "CoinFactorization2.cpp",
@@ -66,6 +157,7 @@ let package = Package(
                 "CoinFileIO.cpp",
                 "CoinFinite.cpp",
                 "CoinIndexedVector.cpp",
+                "CoinKnapsackRow.cpp",
                 "CoinLpIO.cpp",
                 "CoinMessage.cpp",
                 "CoinMessageHandler.cpp",
@@ -73,6 +165,8 @@ let package = Package(
                 "CoinModelUseful.cpp",
                 "CoinModelUseful2.cpp",
                 "CoinMpsIO.cpp",
+                "CoinNodeHeap.cpp",
+                "CoinOddWheelSeparator.cpp",
                 "CoinOslFactorization.cpp",
                 "CoinOslFactorization2.cpp",
                 "CoinOslFactorization3.cpp",
@@ -93,7 +187,6 @@ let package = Package(
                 "CoinPresolveImpliedFree.cpp",
                 "CoinPresolveIsolated.cpp",
                 "CoinPresolveMatrix.cpp",
-                "CoinPresolveMonitor.cpp",
                 "CoinPresolvePsdebug.cpp",
                 "CoinPresolveSingleton.cpp",
                 "CoinPresolveSubst.cpp",
@@ -104,20 +197,23 @@ let package = Package(
                 "CoinRational.cpp",
                 "CoinSearchTree.cpp",
                 "CoinShallowPackedVector.cpp",
+                "CoinShortestPath.cpp",
                 "CoinSimpFactorization.cpp",
                 "CoinSnapshot.cpp",
+                "CoinStaticConflictGraph.cpp",
                 "CoinStructuredModel.cpp",
+                "CoinTerm.cpp",
                 "CoinWarmStartBasis.cpp",
                 "CoinWarmStartDual.cpp",
                 "CoinWarmStartPrimalDual.cpp",
-                "CoinWarmStartVector.cpp"
+                "CoinWarmStartVector.cpp",
             ],
             
             // ---- Public headers --------------------------------------------------------------
             // Anything under `publicHeadersPath` becomes visible to *other* packages.
             // It also tells SPM where to look for the headers when it builds a Clang module.
             publicHeadersPath: ".",          // Anything inside src that ends with .h/.hpp becomes a public Clang module
-            
+           
             // ---- C++‑specific settings --------------------------------------------------------
             cxxSettings: [
                 // Use the C++20 (or C++23) dialect – change if you need a different version.
