@@ -37,6 +37,8 @@ public:
    * Metadata describing the constraint responsible for an implied bound.
    */
   struct ImplicationRow {
+    ImplicationRow() = default;
+    ImplicationRow(std::string name, int idx) : rowName(std::move(name)), rowIndex(idx) {}
     std::string rowName;
     int rowIndex = -1;
   };
@@ -241,6 +243,14 @@ public:
    **/
   static size_t getMinCliqueRow();
 
+  /** Set the maximum number of cliques to store during construction.
+   *  Once reached, further large cliques are skipped (small cliques
+   *  are still expanded into pairwise edges).  Default: 1200. */
+  static void setMaxCliques(size_t maxClq);
+
+  /** Return the maximum cliques limit. */
+  static size_t getMaxCliques();
+
 protected:
   /**
    * Parameter that controls the minimum size of
@@ -248,6 +258,9 @@ protected:
    * (not pairwise).
    **/
   static size_t minClqRow_;
+
+  /** Maximum number of cliques to store. */
+  static size_t maxCliques_;
 
   void registerBoundImplicationInfeasibility(const BinaryBoundInfeasibility &info);
 
@@ -323,6 +336,35 @@ protected:
   size_t maxDegree_;
 
   std::vector< BinaryBoundInfeasibility > infeasibleImplications_;
+
+#ifdef CGRAPH_STATS
+public:
+  struct RowTypeStats {
+    size_t nRows = 0;
+    double totalTime = 0.0;
+    size_t rowsWithConflicts = 0;
+    size_t rowsWithFixings = 0;
+  };
+
+  /** Per-row profile: stats grouped by (nz_bucket, sense, abs_rhs_bucket). */
+  struct RowProfileStats {
+    int nzBucket = 0;     // 0:<4, 1:<8, 2:<16, 3:<32, 4:<64, 5:<128, 6:<256, 7:>=256
+    char sense = '?';     // 'L','G','E','R'
+    int rhsBucket = 0;    // 0:0, 1:1, 2:2-5, 3:6-20, 4:21-100, 5:>100
+    size_t nRows = 0;
+    double totalTime = 0.0;
+    size_t rowsWithConflicts = 0;
+    size_t rowsWithFixings = 0;
+    size_t totalConflictsFound = 0; // sum of clique sizes across rows
+  };
+
+  const RowTypeStats *rowTypeStats() const { return rowTypeStats_; }
+  const std::vector<RowProfileStats> &rowProfileStats() const { return rowProfileStats_; }
+
+protected:
+  RowTypeStats rowTypeStats_[16]; // indexed by CoinRowType
+  std::vector<RowProfileStats> rowProfileStats_;
+#endif
 };
 
 #endif // CONFLICTGRAPH_H

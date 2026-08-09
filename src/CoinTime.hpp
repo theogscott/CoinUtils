@@ -88,19 +88,13 @@ inline double CoinGetTimeOfDay()
 
 #endif // _MSC_VER
 
-/**
-   Query the elapsed wallclock time since the first call to this function. If
-   a positive argument is passed to the function then the time of the first
-   call is set to that value (this kind of argument is allowed only at the
-   first call!). If a negative argument is passed to the function then it
-   returns the time when it was set.
-*/
-
-inline double CoinWallclockTime(double callType = 0)
+/// Returns elapsed wall-clock time in seconds since the first call.
+/// Uses a static local variable (C++11) so the start time is captured
+/// exactly once, thread-safely, without requiring C++17 inline variables.
+inline double CoinWallclockTime()
 {
-  double callTime = CoinGetTimeOfDay();
-  static const double firstCall = callType > 0 ? callType : callTime;
-  return callType < 0 ? firstCall : callTime - firstCall;
+  static const double wallclockStart = CoinGetTimeOfDay();
+  return CoinGetTimeOfDay() - wallclockStart;
 }
 
 //#############################################################################

@@ -2,6 +2,9 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
+// Always flush the print buffer so log messages appear promptly in files.
+#define FLUSH_PRINT_BUFFER 1
+
 #include "CoinMessageHandler.hpp"
 #include "CoinHelperFunctions.hpp"
 #include <cassert>
@@ -285,7 +288,7 @@ void CoinMessages::toCompact()
       }
     }
     // space
-    char *temp = new char[lengthMessages_];
+    char *temp = new char[static_cast<unsigned int>(lengthMessages_)];
     CoinOneMessage **newMessage = reinterpret_cast< CoinOneMessage ** >(temp);
     temp += numberMessages_ * CoinSizeofAsInt(CoinOneMessage *);
     CoinOneMessage message;

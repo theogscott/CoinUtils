@@ -27,6 +27,7 @@
 #include "CoinOddWheelSeparator.hpp"
 #include "CoinConflictGraph.hpp"
 #include "CoinShortestPath.hpp"
+#include "CoinTime.hpp"
 
 #define ODDWHEEL_SEP_DEF_MIN_FRAC               0.001
 #define ODDWHEEL_SEP_DEF_EPS                    1e-6
@@ -59,6 +60,7 @@ CoinOddWheelSeparator::CoinOddWheelSeparator(const CoinConflictGraph *cgraph, co
     icaActivity_ = std::vector<double>(cgSize);
     fillActiveColumns();
     extMethod_ = extMethod;
+    maxSeconds_ = 0.0;
     spf_ = NULL;
 
     if (icaCount_ > 4) {
@@ -100,9 +102,18 @@ void CoinOddWheelSeparator::searchOddWheels() {
         return;
     }
 
-    prepareGraph();
+    const double startTime = (maxSeconds_ > 0.0) ? CoinGetTimeOfDay() : 0.0;
 
+    if (!prepareGraph(startTime))
+        return;
+
+    // Check time every 128 nodes so we don't check too frequently on small
+    // instances or too rarely on large ones.
     for (size_t i = 0; i < icaCount_; i++) {
+        if (maxSeconds_ > 0.0 && (i & 127) == 0 && i > 0) {
+            if (CoinGetTimeOfDay() - startTime >= maxSeconds_)
+                break;
+        }
         findOddHolesWithNode(i);
     }
 
@@ -146,12 +157,17 @@ void CoinOddWheelSeparator::fillActiveColumns() {
 #endif
 }
 
-void CoinOddWheelSeparator::prepareGraph() {
+bool CoinOddWheelSeparator::prepareGraph(double startTime) {
     size_t idxArc = 0;
     const size_t nodes = icaCount_ * 2;
 
     //Conflicts: (x', y'')
     for (size_t i1 = 0; i1 < icaCount_; i1++) {
+        // Check time every 64 outer iterations (each does icaCount_ inner steps).
+        if (maxSeconds_ > 0.0 && (i1 & 63) == 0 && i1 > 0) {
+            if (CoinGetTimeOfDay() - startTime >= maxSeconds_)
+                return false;
+        }
         spArcStart_[i1] = idxArc;
         const size_t idx1 = icaIdx_[i1];
 
@@ -196,6 +212,7 @@ void CoinOddWheelSeparator::prepareGraph() {
 
     spArcStart_[icaCount_ * 2] = idxArc;
     spf_ = new CoinShortestPath(nodes, idxArc, spArcStart_.data(), spArcTo_.data(), spArcDist_.data());
+    return true;
 }
 
 void CoinOddWheelSeparator::findOddHolesWithNode(size_t node) {
